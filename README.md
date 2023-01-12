@@ -1,4 +1,4 @@
-kopia-mon is a off-line monitoring tool for Kopia backup. It is designed to run on a daily schedule, review all the backup tasks that completed since its previous run and send an email report with any detected errors.  
+kopia-mon is a off-line monitoring tool for Kopia backup. It is designed to run on a schedule, review all the backup tasks that completed since its previous run, and send an email report with any detected errors.  
 
 **NOTE:** The program has only been tested with gmail, both for sending and receiving the emails. Other SMTP providers that use TLS should work but there are no guarantees. Likewise, if the recipient is not on gmail, the email formatting may not work correctly and the email may look messed up.
 
@@ -10,6 +10,10 @@ Installing dependencies:
 ```
 pip install -r requirements.txt
 ```
+
+### Gmail configuration
+Since the config file holds a cleartext (=unencrypted) password it is **highly** recommended that you create a dedicated gmail account just for sending emails from kopia-mon. Once you create the account had over to the "Manage Account" panel and select the "Security" tab. Find the "Signing in to Google" section on that page and select "App passwords". Create a new app password and, copy it, and paste in appropriate place in the config file.
+
 
 # Configuration
 ## Command line
@@ -60,6 +64,6 @@ repositories:
     errors_only: true
 ```
 
-## Gmail configuration
-Since the config holds an cleartext (unencrypted) password it is **highly** recommended that you create a dedicated gmail account just for sending emails from kopia-mon. Once you create the account had over to the "Manage Account" panel and select the "Security" tab. Find the "Signing in to Google" section on that page and select "App passwords". Create a new app password and, copy it, and paste in appropriate place in the config file.
+### Scheduling
+The program doesn't manage scheduling. You should use your OS scheduling service (cron, Windows Task Scheduler, etc.) to run it periodically. Kopia's "After Snapshot" action should also work but it hasn't been tested and unless it's very important to be notified immediately about errors I wouldn't recommend it.
 
