@@ -1,0 +1,25 @@
+{% set stime = snapshot.startTime | to_date %}
+{% set etime = snapshot.endTime | to_date %}
+{% set total_time = (etime-stime).total_seconds() | int %}
+
+<tr class="data-row {%if iloop.last%}last-row{% endif %}">
+<td class="first">{{ stime.astimezone().strftime('%Y-%m-%d %H:%M') }}</td>
+<td>
+    {{ total_time }}s
+    {%- if total_time > 60 -%}
+        ({{- "{:02}:{:02}:{:02}".format(total_time // 3600, total_time % 3600 // 60, total_time % 60) -}})
+    {%- endif %}
+</td>
+<td>{{ snapshot.rootEntry.summ.files }}</td>
+<td class="last">{{ snapshot.stats.fileCount }}</td>
+<tr>
+{% if snapshot.stats.errorCount > 0 %}
+<tr><td colspan="4" class="errors">
+    Errors:<br/>
+    <table>
+    {% for error in snapshot.errors %}
+        <tr><td>{{ error.path }}</td> <td>{{ error.error }}</td></tr>
+    {% endfor %}
+    </table>
+</td><tr>
+{% endif %}

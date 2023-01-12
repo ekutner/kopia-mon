@@ -1,0 +1,80 @@
+<html>
+<head>
+<style>
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.repo-header {
+    background-color: #D3D3D3;
+    border: 1px solid;
+}
+.repo-header .main-header {
+    font-size: 2em;
+    font-weight: bold;
+    width: 100%;
+}
+.repo-header .sub-header {
+    font-size: 1em;
+    width: 100%;
+}
+
+.section-header td  {
+    border: 1px solid;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+.column-headers td {
+    border-bottom: 1px solid;
+    font-weight: bold;
+}
+td.first {
+    border-left: 1px solid;
+}
+td.last {
+    border-right: 1px solid;
+}
+.last-row td {
+    border-bottom: 1px solid;
+}
+.errors {
+    background-color: #FF5050 !important;
+}
+</style>
+</head>
+<body>
+<table>
+
+{% for repo in data if repo.should_render %}
+    <tr class="repo-header {% if (now - repo.last_snapshot).total_seconds() > repo.config.inactivity_days*3600*24 and repo.last_modified_file is not none %}errors{% endif %}">
+    <td colspan="4">
+        <div class="main-header">{{repo.status.clientOptions.description}}</div>
+        <div class="sub-header">
+            Last snapshot: {{repo.last_snapshot.astimezone().strftime('%Y-%m-%d %H:%M')}}
+            {% if repo.last_modified_file is not none %}
+                <br>Last modified file: {{repo.last_modified_file.time.astimezone().strftime('%Y-%m-%d %H:%M')}} ({{repo.last_modified_file.path }})
+            {% endif %}
+        </div>
+    </td>
+    </tr>
+    {% for host, host_snapshots in repo.snapshots | groupby("source.host") %}
+        {% for path, path_snapshots in host_snapshots | groupby("source.path") %}
+            <tr class="section-header"><td colspan="4">{{path}}</td></tr>
+            <tr class="column-headers">
+                <td class="first">Time</td>
+                <td>Duration</td>
+                <td>Total Files</td>
+                <td class="last">Backed Up Files</td>
+            </tr>
+
+            {% for snapshot in path_snapshots %}
+                {% set iloop = loop %}
+                {% include "snapshot.template" %}
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+
+{% endfor %}
+</table>
+</body>
+</html>
