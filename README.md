@@ -11,7 +11,7 @@ Installing dependencies:
 pip install -r requirements.txt
 ```
 
-#Configuration
+# Configuration
 ## Command line
 python kopia-mon.py [-c \<config-file>]
 
@@ -22,8 +22,8 @@ python kopia-mon.py [-c \<config-file>]
 kopia-mon requires a YAML configuration file with the following structure:
 
 **email:**  
-&nbsp;&nbsp; **from:** (required) - Email address of sender  
-&nbsp;&nbsp; **to:** (required) - A single email address or array of email addresses to send the report to>  
+| **from:** (required) - Email address of sender  
+| **to:** (required) - A single email address or array of email addresses to send the report to>  
 &nbsp;&nbsp; **_subject:_** (optional) - The subject of the email when there are _no errors_  
 &nbsp;&nbsp; **_subject-error:_** (optional) - The subject of the email when there _are errors_  
 &nbsp;&nbsp; **server:**  
