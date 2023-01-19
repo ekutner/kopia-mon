@@ -17,10 +17,13 @@ Since the config file holds a cleartext (=unencrypted) password it is **highly**
 
 # Configuration
 ## Command line
-python kopia-mon.py [-c \<config-file>]
+python kopia-mon.py 
 
-**options:**  
--c - (optional) Path to config file. Default: "config.yaml"
+**Optional arguments:**  
+**`-c <CONFIG_FILE>`** - Path to config file. Default: "config.yaml"  
+**`--no-send-email`** - Write the report to stdout instead of sending it by email  
+**`--set-exit-code`** -  Set the exit code to 0 if no report was generated, 2 if a report was generated and 6 if an error report was generated. An exit code of 1 would indicate a python error, as usual.
+
 
 ## Config file
 kopia-mon requires a YAML configuration file with the following structure:
@@ -64,6 +67,6 @@ repositories:
     errors_only: true
 ```
 
-### Scheduling
+## Scheduling
 The program doesn't manage scheduling. You should use your OS scheduling service (cron, Windows Task Scheduler, etc.) to run it periodically. Kopia's "After Snapshot" action should also work but it hasn't been tested and unless it's very important to be notified immediately about errors I wouldn't recommend it.
 

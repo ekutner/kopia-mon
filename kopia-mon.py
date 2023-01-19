@@ -13,8 +13,9 @@ from status import Status
 
 parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument("-c", default="config.yaml", action="store", dest="config_file", help="path to the config file")
-args= parser.parse_known_args()
-
+parser.add_argument("--no-send-email", default=True, action="store_false", dest="send_email", help="Write the report to stdout instead of sending it by email")
+parser.add_argument("--set-exit-code", default=False, action="store_true", dest="set_exit_code", help="Sets non-standard exit codes, see the README for details")
+args = parser.parse_args()
 
 def render(config:any, data:any) -> None:
     templateFile:str = config.get("template", "report.template")
@@ -38,21 +39,29 @@ with open(args.config_file, 'r') as stream:
 status = Status.load()
 all_repos = []
 error_count = 0
-send_email = False
+generate_report = False
 for repo in config["repositories"]:
     repo_info = RepoInfo.create(repo, status.last_run)
     error_count += repo_info.error_count
     if repo_info.inactivity_error:
         error_count += 1
-    send_email = send_email or repo_info.should_render
+    generate_report = generate_report or repo_info.should_render
 
     all_repos.append(repo_info)
 
-if send_email:
+if generate_report:
     html = render(config, all_repos )
-    #print(html)
-    em = Email(config["email"])
-    em.send(html, error_count>0)
-
+    if args.send_email:
+        em = Email(config["email"])
+        em.send(html, error_count>0)
+    else:
+        print(html)
 status.last_run = datetime.now(tz=timezone.utc)
 status.save()
+
+if args.set_exit_code:
+    if generate_report:
+        if error_count>0:
+            exit(6)
+        else:
+            exit(2)
