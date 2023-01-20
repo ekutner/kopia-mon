@@ -17,7 +17,7 @@ parser.add_argument("--no-send-email", default=True, action="store_false", dest=
 parser.add_argument("--set-exit-code", default=False, action="store_true", dest="set_exit_code", help="Sets non-standard exit codes, see the README for details")
 args = parser.parse_args()
 
-def render(config:any, data:any) -> None:
+def render(config:dict, data:list[dict]) -> str:
     templateFile:str = config.get("template", "report.template")
     if "." not in templateFile:
         templateFile += '.template'

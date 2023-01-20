@@ -26,16 +26,6 @@ class RepoInfo:
     last_modified_file:FileInfo = None
     should_render:bool = False
 
-    # def add_snapshot(self, snapshot):
-    #     source = snapshot["source"]
-    #     host = source["host"]
-    #     path = source["path"]
-    #     if host not in self.snapshots:
-    #         self.snapshots[host] = dict()
-    #     if path not in self.snapshots[host]:
-    #         self.snapshots[host][path] = list()
-    #     self.snapshots[host][path].append(snapshot)
-
     def _update_last_modified_file(self):
         hostname = platform.node().lower()
 
