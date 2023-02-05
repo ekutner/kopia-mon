@@ -46,11 +46,13 @@ td.last {
 <table>
 
 {% for repo in data if repo.should_render %}
-    <tr class="repo-header {% if (now - repo.last_snapshot).total_seconds() > repo.config.inactivity_days*3600*24 and repo.last_modified_file is not none %}errors{% endif %}">
+    {% set missed_backup = (now - repo.last_snapshot).total_seconds() > repo.config.inactivity_days*3600*24 and
+                                (repo.last_modified_file is none or repo.last_modified_file.time.astimezone() > repo.last_snapshot) %}
+    <tr class="repo-header {% if missed_backup %}errors{% endif %}">
     <td colspan="4">
         <div class="main-header">{{repo.status.clientOptions.description}}</div>
         <div class="sub-header">
-            Last snapshot: {{repo.last_snapshot.astimezone().strftime('%Y-%m-%d %H:%M')}}
+            Last snapshot: {{repo.last_snapshot.astimezone().strftime('%Y-%m-%d %H:%M')}} {% if missed_backup %}<b>(no backups for {{  ((now - repo.last_snapshot).total_seconds()/24/3600) | round | int }} days)</b> {% endif %}
             {% if repo.last_modified_file is not none %}
                 <br>Last modified file: {{repo.last_modified_file.time.astimezone().strftime('%Y-%m-%d %H:%M')}} ({{repo.last_modified_file.path }})
             {% endif %}
