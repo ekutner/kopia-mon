@@ -8,7 +8,7 @@ class KopiaApi:
 
     def _kopia_command(self, args:list[str]):
         args.append(f"--config-file={self._config_file}")
-        with subprocess.Popen(["kopia.exe", *args], stdout=subprocess.PIPE) as proc:
+        with subprocess.Popen(["kopia", *args], stdout=subprocess.PIPE) as proc:
             res = proc.stdout.read()
             return json.loads(res)
 
