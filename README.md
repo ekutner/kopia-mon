@@ -59,6 +59,7 @@ kopia-mon requires a YAML configuration file with the following structure:
 &nbsp;&nbsp; **server:**  
 &nbsp;&nbsp;&nbsp;&nbsp; **address:** (required) - The address of the SMTP server to use for sending the emails  
 &nbsp;&nbsp;&nbsp;&nbsp; **port:** (required) - The port of the SMTP server  
+&nbsp;&nbsp;&nbsp;&nbsp; **transport:** (optional) - The transport encryption to use. Either SSL (the default) or TLS  
 &nbsp;&nbsp;&nbsp;&nbsp; **user:** (required) - The username to authenticate to the SMTP server with  
 &nbsp;&nbsp;&nbsp;&nbsp; **password:** (required) - The password to authenticate with  
 **repositories:**  
