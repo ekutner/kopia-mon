@@ -7,7 +7,7 @@
 <td>
     {{ total_time }}s
     {%- if total_time > 60 -%}
-        ({{- "{:02}:{:02}:{:02}".format(total_time // 3600, total_time % 3600 // 60, total_time % 60) -}})
+        {{- " ({:02}:{:02}:{:02}) ".format(total_time // 3600, total_time % 3600 // 60, total_time % 60) -}}
     {%- endif %}
 </td>
 <td>{{ snapshot.rootEntry.summ.files }}</td>
