@@ -2,6 +2,7 @@ import argparse
 import logging
 import yaml
 import dateutil.parser
+from pathlib import Path
 from dateutil.tz import tzlocal
 from datetime import datetime, timezone
 from jinja2 import Environment, FileSystemLoader
@@ -13,9 +14,14 @@ from status import Status
 
 parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument("-c", default="config.yaml", action="store", dest="config_file", help="path to the config file")
+parser.add_argument("-v", default=False, action="store_true", dest="verbose", help="Output verbose log information to the console")
 parser.add_argument("--no-send-email", default=True, action="store_false", dest="send_email", help="Write the report to stdout instead of sending it by email")
 parser.add_argument("--set-exit-code", default=False, action="store_true", dest="set_exit_code", help="Sets non-standard exit codes, see the README for details")
+
 args = parser.parse_args()
+
+if args.verbose:
+    logging.getLogger().setLevel(logging.DEBUG)
 
 def render(config:dict, data:list[dict]) -> str:
     templateFile:str = config.get("template", "report.template")
@@ -29,18 +35,26 @@ def render(config:dict, data:list[dict]) -> str:
     template.globals['config'] = config
     return template.render(data=data)
 
+if not Path(args.config_file).exists():
+    logging.error("Config file doesn't exist at the specified path: %s", args.config_file)
+    exit(1)
+
 with open(args.config_file, 'r') as stream:
     try:
         config = yaml.safe_load(stream)
     except yaml.YAMLError as exc:
-        logging.debug(exc)
+        logging.error("Invalid YAML syntax", exc_info=exc)
         exit(1)
+
+if args.verbose:
+    logging.info("Config file is loaded")
 
 status = Status.load()
 all_repos = []
 error_count = 0
 generate_report = False
 for repo in config["repositories"]:
+    logging.debug("Processing repo: %s", repo)
     repo_info = RepoInfo.create(repo, status.last_run)
     error_count += repo_info.error_count
     if repo_info.inactivity_error:
