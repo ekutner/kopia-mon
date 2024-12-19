@@ -61,7 +61,7 @@ td.last {
     </tr>
     {% for host, host_snapshots in repo.snapshots | groupby("source.host") %}
         {% for path, path_snapshots in host_snapshots | groupby("source.path") %}
-            <tr class="section-header"><td colspan="4">{{path}}</td></tr>
+            <tr class="section-header"><td colspan="4">{% if repo.hosts | length > 0 %}{{path_snapshots[0].source.host }} : {% endif %}{{path}}</td></tr>
             <tr class="column-headers">
                 <td class="first">Time</td>
                 <td>Duration</td>
