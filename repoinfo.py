@@ -65,7 +65,7 @@ class RepoInfo:
             source = snapshot["source"]
             if not any(s["host"]==source["host"] and s["path"]==source["path"] for s in repo.sources ):
                 repo.sources.append(source)
-            repo.hosts.add(source["host"])
+            repo.hosts.add(f"{source['host']}@{source['host']}")
             start_time = dateutil.parser.isoparse(snapshot["startTime"])
             if start_time > repo.last_snapshot:
                 repo.last_snapshot = start_time
