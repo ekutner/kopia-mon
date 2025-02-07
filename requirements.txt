@@ -1,4 +1,4 @@
 dataclasses-json==0.5.7
 Jinja2==3.1.2
 python-dateutil==2.8.2
-PyYAML==6.0
+PyYAML==6.0.1
