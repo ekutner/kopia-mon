@@ -31,7 +31,7 @@ The kopia command line must be in the environment path when kopia-mon is started
 
 ## Install and configure Python
 ### Using pip
-Python with minimum version 3.10 is required. It is recommended to use a virtual environment, if you know how to use it and how to get the scheduler to run the script from the correct environment.
+Python with minimum version 3.12 is required. It is recommended to use a virtual environment, if you know how to use it and how to get the scheduler to run the script from the correct environment.
 
 Installing dependencies: 
 ```
