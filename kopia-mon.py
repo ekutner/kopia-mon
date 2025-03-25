@@ -17,6 +17,7 @@ parser.add_argument("-c", default="config.yaml", action="store", dest="config_fi
 parser.add_argument("-v", default=False, action="store_true", dest="verbose", help="Output verbose log information to the console")
 parser.add_argument("--no-send-email", default=True, action="store_false", dest="send_email", help="Write the report to stdout instead of sending it by email")
 parser.add_argument("--set-exit-code", default=False, action="store_true", dest="set_exit_code", help="Sets non-standard exit codes, see the README for details")
+parser.add_argument("-r", default=False, action="store_true", dest="verify", help="Verify the snapshots")
 
 args = parser.parse_args()
 
@@ -53,15 +54,31 @@ status = Status.load()
 all_repos = []
 error_count = 0
 generate_report = False
-for repo in config["repositories"]:
-    logging.debug("Processing repo: %s", repo)
-    repo_info = RepoInfo.create(repo, status.last_run)
-    error_count += repo_info.error_count
+for repo_config in config["repositories"]:
+    logging.debug("Processing repo: %s", repo_config)
+    repo_status = status.repos.get(repo_config["config-file"], None)
+    repo_info = RepoInfo.create(repo_config, status.last_run)
+    if "snapshot_verify" in repo_config:
+        if repo_status.snapshot_verify is None or (datetime.now(tz=timezone.utc) - repo_status.snapshot_verify.timestamp).days >= repo_config["snapshot_verify"]["interval_days"]:
+
+            kopia = KopiaApi(repo_config["config-file"])
+            snapshot_verify = kopia.snapshot_verify(percent=repo_config["snapshot_verify"]["percent"])
+            repo_info.snapshot_verify = snapshot_verify
+            logging.debug("Snapshot verify result: %s", snapshot_verify)
+        else:
+            repo_info.snapshot_verify = repo_status.snapshot_verify
+
+
+    error_count += repo_info.error_count + repo_info.snapshot_verify.error_count if repo_info.snapshot_verify else 0
     if repo_info.inactivity_error:
         error_count += 1
     generate_report = generate_report or repo_info.should_render
 
     all_repos.append(repo_info)
+    status.repos[repo_config["config-file"]] = repo_info
+    status.last_run = datetime.now(tz=timezone.utc)
+    status.save()
+
 
 if generate_report:
     html = render(config, all_repos )

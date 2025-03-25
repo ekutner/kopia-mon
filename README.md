@@ -3,6 +3,7 @@ kopia-mon is a off-line monitoring and alerting tool for Kopia backup. It is des
 
 <u>**Main features:**</u>
 * Email based reporting and alerting for kopia backup
+* Perform periodic snapshot verification with file download
 * Always send the report or only when errors occur
 * Alert on snapshot error
 * Alert on snapshot inactivity/ missed backups
@@ -53,6 +54,10 @@ Since the config file holds a cleartext (=unencrypted) password it is **highly**
 ## Scheduling
 The program doesn't manage scheduling. You should use your OS scheduling service (cron, Windows Task Scheduler, etc.) to run it periodically. Kopia's "After Snapshot" action should also work but it hasn't been tested and unless it's very important to be notified immediately about errors I wouldn't recommend it.
 
+## Snapshot verification
+Basic snapshot verification is done by the Kopia UI, however it stops short of downloading blobs from the storage to verify it wasn't corrupted there. Therefor, it is highly recommended to run periodic snapshot verification with file download, which is what kopia-mon can now do.  
+See further information in [this discussion](https://kopia.discourse.group/t/does-kopiaui-not-verify-snapshots/3778/14) and in the [kopia documentation](https://kopia.io/docs/advanced/consistency/).
+
 <BR>
 
 # Configuration
@@ -84,6 +89,9 @@ kopia-mon requires a YAML configuration file with the following structure:
 &nbsp;&nbsp;&nbsp;&nbsp; **inactivity_days:** (required) - minimum days of inactivity before reporting an error  
 &nbsp;&nbsp;&nbsp;&nbsp; **validate_inactivity:** (required) - Boolean value indicating if kopia-mon should try to verify if there were any actual file changes, that were expected to be backup up but didn't, before reporting an inactivity error. This check ignores ignored files so a change in an ignored file will still trigger the alert  
 &nbsp;&nbsp;&nbsp;&nbsp; **errors_only:** (required) - Boolean value indicating if kopia-mon should only send an email when errors are detected or every time it runs  
+&nbsp;&nbsp;&nbsp;&nbsp; **snapshot_verify:** (optional) - If not specified than snapshot verification will not be performed   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **interval_days:** (required) - The interval in days to run snapshot verify  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **percent:** 1 (required) - The percent of files to download during verification
 
 Example:
 ```
@@ -106,6 +114,9 @@ repositories:
     inactivity_days: 5
     validate_inactivity: true
     errors_only: true
+    snapshot_verify:
+        interval_days: 1
+        percent: 1
 ```
 
 

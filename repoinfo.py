@@ -5,16 +5,20 @@ import os
 import platform
 import typing
 import dateutil.parser
-from typing import Self
+from typing import Self, Optional
 from dataclasses import dataclass, field
+from dataclasses_json import dataclass_json, Undefined
 from datetime import datetime, timezone
-from kopiaapi import KopiaApi
+from kopiaapi import KopiaApi, SnapshotVerifyResult, ContentVerifyResult
 
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class FileInfo:
     path:str = None
     time:datetime = None
 
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class RepoInfo:
     config:dict
@@ -24,9 +28,11 @@ class RepoInfo:
     error_count:int = 0
     inactivity_error:bool = False
     sources:list[dict] = field(default_factory=lambda: list())
-    last_modified_file:FileInfo = None
+    last_modified_file:Optional[FileInfo] = None
     should_render:bool = False
     hosts:set[str] = field(default_factory=lambda: set())
+    snapshot_verify:Optional[SnapshotVerifyResult] = None
+    content_verify:Optional[ContentVerifyResult] = None
 
     def _update_last_modified_file(self) -> None:
         hostname = platform.node().lower()

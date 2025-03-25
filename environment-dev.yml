@@ -1,0 +1,18 @@
+# Create a new environment using:
+# conda env create -f environment.yml
+
+name: kopia-mon
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11.*
+  - jinja2>=3.1.2
+  - pyyaml
+  - python-dateutil
+  - pytest
+  - pip
+  - pip:
+    - dataclasses-json>=0.5.7
+    - pytest-mock
+

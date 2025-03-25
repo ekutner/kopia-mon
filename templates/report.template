@@ -40,6 +40,18 @@ td.last {
 .errors {
     background-color: #FF5050 !important;
 }
+.verification {
+    border: 1px solid;
+}
+.verification .main-header {
+    width: 100%;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+.verification .sub-header {
+    font-size: 1em;
+    width: 100%;
+}
 </style>
 </head>
 <body>
@@ -80,6 +92,31 @@ td.last {
             {% endfor %}
         {% endfor %}
     {% endfor %}
+    {% if repo.snapshot_verify %}
+        <tr class="verification"><td colspan="4">
+            <div class="main-header">Snapshot Verification</div>
+            <div class="sub-header">
+                Last run at: {{ repo.snapshot_verify.timestamp.astimezone().strftime('%Y-%m-%d %H:%M') }}
+                    {%- if repo.snapshot_verify.run_time > 60 -%}
+                        {%- set run_time=repo.snapshot_verify.run_time|int %}
+                        (Listed {{ repo.snapshot_verify.blob_count }} blobs and processed {{ repo.snapshot_verify.processed_count }} objects in {{ "{:02}:{:02}:{:02}h ".format(run_time // 3600, run_time % 3600 // 60, run_time % 60) }} )
+                    {%- else %}
+                        (Listed {{ repo.snapshot_verify.blob_count }} blobs and processed {{ repo.snapshot_verify.processed_count }} objects in {{repo.snapshot_verify.run_time}}s)
+                    {%- endif %}
+            </div>
+            <div class="sub-header">
+                {% if repo.snapshot_verify.error_count==0 %}No errors found{% endif %}
+            </div>
+        </td></tr>
+        {% if repo.snapshot_verify.error_count>0 %}
+            <tr><td colspan="4" class="errors">
+                <div>Found {{repo.snapshot_verify.error_count}} errors:</div>
+                {% for error in repo.snapshot_verify.errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </td></tr>
+        {% endif %}
+    {% endif %}
 
 {% endfor %}
 </table>

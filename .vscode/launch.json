@@ -10,7 +10,12 @@
             "request": "launch",
             "program": "kopia-mon.py",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": false,
+            "args": [
+                "-v",
+                "-r"
+            ]
+
         }
     ]
 }
