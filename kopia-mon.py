@@ -59,8 +59,9 @@ for repo_config in config["repositories"]:
     repo_status = status.repos.get(repo_config["config-file"], None)
     repo_info = RepoInfo.create(repo_config, status.last_run)
     if "snapshot_verify" in repo_config:
+        # allow 10 minutes grace time when checking if considering if interval_days have passed, to handle fluctuations in execution time of the previous steps
         if repo_status is None or repo_status.snapshot_verify is None or \
-            (datetime.now(tz=timezone.utc) - repo_status.snapshot_verify.timestamp).days >= repo_config["snapshot_verify"]["interval_days"]:
+            (datetime.now(tz=timezone.utc) - repo_status.snapshot_verify.timestamp).total_seconds() > repo_config["snapshot_verify"]["interval_days"]*3600*24 - 10*60:
 
             kopia = KopiaApi(repo_config["config-file"])
             snapshot_verify = kopia.snapshot_verify(percent=repo_config["snapshot_verify"]["percent"])
