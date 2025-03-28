@@ -1,17 +1,19 @@
 # kopia-mon
-kopia-mon is a off-line monitoring and alerting tool for Kopia backup. It is designed to run on a schedule, review all the backup tasks that completed since its previous run, and send an email report with any detected errors.
+kopia-mon is a off-line monitoring and alerting tool for Kopia backup. It is designed to run on a schedule, review all the backup tasks that completed since its previous run, and send an email report with any detected errors.  
 
 <u>**Main features:**</u>
 * Email based reporting and alerting for kopia backup
 * Perform periodic snapshot verification with file download
 * Always send the report or only when errors occur
-* Alert on snapshot error
+* Alert on snapshot or snapshot verification errors
 * Alert on snapshot inactivity/ missed backups
 * Optionally do a basic verification that there were actually changes that required backup when detecting inactivity
 * Optionally set a different email header when errors are detected
 * Handles multiple repositories in a single email
 * Support for SMTP servers that require authentication like gmail
 
+
+⭐ If you are using this tool then please star the repo so I have an idea how many people are using it.
 
 ## Example reports:
 A daily report with no errors:
@@ -55,7 +57,7 @@ Since the config file holds a cleartext (=unencrypted) password it is **highly**
 The program doesn't manage scheduling. You should use your OS scheduling service (cron, Windows Task Scheduler, etc.) to run it periodically. Kopia's "After Snapshot" action should also work but it hasn't been tested and unless it's very important to be notified immediately about errors I wouldn't recommend it.
 
 ## Snapshot verification
-Basic snapshot verification is done by the Kopia UI, however it stops short of downloading blobs from the storage to verify it wasn't corrupted there. Therefor, it is highly recommended to run periodic snapshot verification with file download, which is what kopia-mon can now do.  
+Basic snapshot verification is done by the Kopia UI, however it stops short of downloading blobs from the storage to verify there are no corruptions there. Therefor, it is highly recommended to run periodic snapshot verification with file download, which is what kopia-mon can now do.  
 See further information in [this discussion](https://kopia.discourse.group/t/does-kopiaui-not-verify-snapshots/3778/14) and in the [kopia documentation](https://kopia.io/docs/advanced/consistency/).
 
 <BR>
